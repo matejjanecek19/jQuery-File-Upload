@@ -17,6 +17,7 @@
 					fileInputName: "file",
 					multiple: true,
 					action: "./upload.php",
+					data: {lorem: "Ipsum"},
 					onDragEnter: function(){
 						//css
 						this.dropHandler.css("background", "red");
@@ -28,6 +29,9 @@
 					onDragOut: function(){
 						//css
 						this.dropHandler.css("background", "black");
+					},
+					onSuccess: function(data, upload_progress){
+						upload_progress.progress.text(data);
 					},
 					progressObject: function fileProgress(file_info){
 						this.file_info = file_info;

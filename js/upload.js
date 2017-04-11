@@ -4,9 +4,11 @@ function fileUploader(options){
 		multiple: false,
 		fileInputName: "file",
 		method: "POST",
-		allow: ["image/png"],
-		form: false,
-		onSuccess: function(){
+		allow: [],
+		data: {},
+		dataType: "text",
+		counter: 0,
+		onSuccess: function(data, upload_progress){
 		},
 		onError: function(){
 		},
@@ -21,7 +23,6 @@ function fileUploader(options){
 			}
 		},
 		onWrongFileType: function(){
-			alert();
 		},
 		action: ""
 	}, options);
@@ -94,9 +95,13 @@ function fileUploader(options){
 			this.options.onWrongFileType();
 			return false;
 		}
-		console.log(formdata.get(this.options.fileInputName).type);
+		this.options.counter++;
 		var upload_progress = new this.options.progressObject(formdata.getAll(this.options.fileInputName)[0]);
 		upload_progress.fileUploadObj = this;
+		
+		$.each(upload_progress.fileUploadObj.options.data, function(name, value){
+			formdata.append(name, value);
+		});
 		upload_progress.ajax = $.ajax({
 			url: upload_progress.fileUploadObj.options.action,
 			type: upload_progress.fileUploadObj.options.method,
@@ -123,15 +128,18 @@ function fileUploader(options){
 			global: false,
 			cache: false,
 			contentType: false,
+			dataType: upload_progress.fileUploadObj.options.dataType,
 			processData: false,
 			forceSync: false,
-			data: formdata,
-			success: function (a,b,c){
-				upload_progress.fileUploadObj.options.onSuccess();
+			data: $.extend(formdata, upload_progress.fileUploadObj.options.data),
+			success: function (data){
+				upload_progress.fileUploadObj.options.onSuccess(data, upload_progress);
+				upload_progress.fileUploadObj.options.counter--;
 			},
 			error: function (a,b,c){
 				if(a.statusText == "abort") return;
-				upload_progress.fileUploadObj.options.onError();
+				upload_progress.fileUploadObj.options.onError(a, b, c);
+				upload_progress.fileUploadObj.options.counter--;
 			}
 		});
 	}
