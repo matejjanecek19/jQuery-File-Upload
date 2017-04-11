@@ -1,5 +1,5 @@
 # jQuery-File-Upload
-
+```javascript
 $(function(){
 				fileUploader({
 					dropHandler: $("#handler"),
@@ -49,3 +49,4 @@ $(function(){
 					}
 				});
 			});
+```
