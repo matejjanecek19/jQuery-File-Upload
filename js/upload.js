@@ -1,10 +1,28 @@
-
 function fileUploader(options){
 	this.options = $.extend({
 		dropHandler: false, // $()
 		multiple: false,
-		fileInput: false,
+		fileInputName: "file",
+		method: "POST",
+		allow: ["image/png"],
 		form: false,
+		onSuccess: function(){
+		},
+		onError: function(){
+		},
+		onDragEnter: function(){
+		},
+		onDragOver: function(){
+		},
+		onDragOut: function(){
+		},
+		progressObject: function(file_info){
+			this.update = function(file_info){
+			}
+		},
+		onWrongFileType: function(){
+			alert();
+		},
 		action: ""
 	}, options);
 	_this = this;
@@ -52,54 +70,49 @@ function fileUploader(options){
 		});
 	}
 	
-	form = $("<form></form>");
-	form.prop("method", "post");
-	form.prop("enctype", "multipart/form-data");
-	form.prop("action", this.options.action);
-	
 	file = $("<input>");
 	file.css("display", "none");
 	file.prop("type", "file");
 	file.prop("name", this.options.fileInputName);
 	if(this.options.multiple) file.prop("multiple", true);
 	
-	file.appendTo(form);
-	form.appendTo($("body"));
+	file.appendTo($("body"));
 	
 	this.options.dropHandler.click(function(){
 		file.trigger('click');
 	});
 	file.change(function(){
-		// console.log($(this).get(0).files);
-		for (var i = 0; i < $(this).get(0).files.length; i++) {
-			// console.log($(this).get(0).files[i]);
+		for(var i = 0; i < $(this).get(0).files.length; i++){
 			var formdata = new FormData();
 			formdata.append(_this.options.fileInputName, $(this).get(0).files[i]);
-			// console.log(formdata);
 			_this.upload(formdata);
 		}
 	}); 
 	
 	this.upload = function(formdata){
-		// console.log(formdata.getAll(this.options.fileInputName)[0]);
+		if($.inArray(formdata.get(this.options.fileInputName).type, this.options.allow) == -1 && this.options.allow.length > 0){
+			this.options.onWrongFileType();
+			return false;
+		}
+		console.log(formdata.get(this.options.fileInputName).type);
 		var upload_progress = new this.options.progressObject(formdata.getAll(this.options.fileInputName)[0]);
+		upload_progress.fileUploadObj = this;
 		upload_progress.ajax = $.ajax({
-			url: './upload.php',
-			type: 'POST',
+			url: upload_progress.fileUploadObj.options.action,
+			type: upload_progress.fileUploadObj.options.method,
 			xhr: function(){
 				upload_progress.start_time = new Date();
 				var xhr = new window.XMLHttpRequest();
-				// upload_progress.xhr = xhr;
 				xhr.upload.addEventListener("progress", function(evt) {
 					if(evt.lengthComputable){
 						upload_progress.loaded = evt.loaded;
 						upload_progress.total = evt.total;
-						upload_progress.seconds_elapsed =   ( new Date().getTime() - upload_progress.start_time.getTime() )/1000;
+						upload_progress.seconds_elapsed = ( new Date().getTime() - upload_progress.start_time.getTime() )/1000;
 						upload_progress.kbps = (upload_progress.seconds_elapsed ? (evt.loaded / upload_progress.seconds_elapsed) : 0) / 1024;
 						upload_progress.mbps = upload_progress.kbps/1024;
 						upload_progress.time_remaining = upload_progress.seconds_elapsed ? (upload_progress.total - upload_progress.loaded) / (upload_progress.kbps*1024) : "???";
-
-						upload_progress.update(evt.loaded / evt.total * 100, upload_progress);
+						upload_progress.percentage = evt.loaded / evt.total * 100;
+						upload_progress.update(upload_progress);
 					
 					}
 			   }, false);
@@ -113,12 +126,12 @@ function fileUploader(options){
 			processData: false,
 			forceSync: false,
 			data: formdata,
-			success: function (a,b,c) { 
-				console.log(a,b,c);
+			success: function (a,b,c){
+				upload_progress.fileUploadObj.options.onSuccess();
 			},
-			error: function (a,b,c) {
+			error: function (a,b,c){
 				if(a.statusText == "abort") return;
-				console.log(a,b,c);
+				upload_progress.fileUploadObj.options.onError();
 			}
 		});
 	}

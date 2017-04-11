@@ -49,9 +49,9 @@
 							reader.readAsDataURL(file_info);
 						}
 						
-						this.update = function(percent, upload_progress){
-							this.progress.css("width", percent + "px");
-							this.progress.html(Math.round(upload_progress.time_remaining) + "s" + Math.round(upload_progress.mbps*100)/100 + " <br>" +this.file_info.name + " " + Math.round(percent*100)/100 + "%");
+						this.update = function(upload_progress){
+							this.progress.css("width", upload_progress.percentage + "px");
+							this.progress.html(Math.round(upload_progress.time_remaining) + "s" + Math.round(upload_progress.mbps*100)/100 + " <br>" +this.file_info.name + " " + Math.round(upload_progress.percentage*100)/100 + "%");
 						}
 						this.progress.on("click", {upload_progress: this}, function(e){
 							e.data.upload_progress.ajax.abort();
