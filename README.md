@@ -14,6 +14,12 @@ fileUploader({
 	onDragOut: function(){
 		// reset default css
 	},
+	onSuccess: function(){
+		// called when upload successfully
+	},
+	onError: function(){
+		// called when error occur
+	},
 	progressObject: function fileProgress(file_info){
 		this.file_info = file_info;
 		// here create element with progress bar
