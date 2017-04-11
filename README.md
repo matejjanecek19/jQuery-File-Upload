@@ -16,6 +16,7 @@ fileUploader({
 	},
 	progressObject: function fileProgress(file_info){
 		this.file_info = file_info;
+		// here create element with progress bar
 		/*
 		image preview
 		if($.inArray(file_info.type, ["image/gif", "image/jpeg", "image/png"]) > -1){
@@ -29,11 +30,13 @@ fileUploader({
 		}
 		*/
 		this.update = function(upload_progress){ // method called when progress changed
-			// here you can use
+			// update progress bar
+			
 			// upload_progress.percentage
 			// upload_progress.mbps
 			// upload_progress.time_remaining
 			// upload_progress.seconds_elapsed
+			
 			// e.data.upload_progress.progress.remove(); to abort upload
 		}
 	}
