@@ -1,6 +1,7 @@
 function fileUploader(options){
 	this.options = $.extend({
 		dropHandler: false, // $()
+		clickHandler: false, // $()
 		multiple: false,
 		fileInputName: "file",
 		method: "POST",
@@ -79,7 +80,7 @@ function fileUploader(options){
 	
 	file.appendTo($("body"));
 	
-	this.options.dropHandler.click(function(){
+	this.options.clickHandler.click(function(){
 		file.trigger('click');
 	});
 	file.change(function(){

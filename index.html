@@ -13,7 +13,8 @@
 		<script type='text/javascript'>
 			$(function(){
 				fileUploader({
-					dropHandler: $("#handler"),
+					dropHandler: $(document),
+					clickHandler: $("#handler"),
 					fileInputName: "file",
 					multiple: true,
 					action: "./upload.php",
