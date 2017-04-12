@@ -9,6 +9,7 @@ function fileUploader(options){
 		data: {},
 		dataType: "text",
 		counter: 0,
+		maxSize: 1, // in MB
 		onSuccess: function(data, upload_progress){
 		},
 		onError: function(){
@@ -23,7 +24,9 @@ function fileUploader(options){
 			this.update = function(file_info){
 			}
 		},
-		onWrongFileType: function(){
+		onWrongFileType: function(file_info){
+		},
+		onMaxSizeExceed: function(file_info){
 		},
 		action: ""
 	}, options);
@@ -92,8 +95,12 @@ function fileUploader(options){
 	}); 
 	
 	this.upload = function(formdata){
+		if(formdata.get(this.options.fileInputName).size/1024/1024 > this.options.maxSize){
+			this.options.onMaxSizeExceed(formdata.get(this.options.fileInputName));
+			return false;
+		}
 		if($.inArray(formdata.get(this.options.fileInputName).type, this.options.allow) == -1 && this.options.allow.length > 0){
-			this.options.onWrongFileType();
+			this.options.onWrongFileType(formdata.get(this.options.fileInputName));
 			return false;
 		}
 		this.options.counter++;
