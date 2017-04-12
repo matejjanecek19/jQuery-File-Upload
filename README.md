@@ -1,7 +1,8 @@
 # jQuery-File-Upload
 ```javascript
 fileUploader({
-	dropHandler: $("#handler"),
+	dropHandler: $(document),
+	clickHandler: $("#handler"),
 	fileInputName: "file", // filename
 	multiple: true,
 	action: "./upload.php", // file to upload
